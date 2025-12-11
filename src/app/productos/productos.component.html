@@ -1,0 +1,34 @@
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading" class="container my-4">
+  <h2 class="mb-4 text-center">Productos Disponibles</h2>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Precio ($)</th>
+          <th>Categoría</th>
+          <th>Comprar</th> 
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let producto of productos">
+          <td>{{ producto.id }}</td>
+          <td>{{ producto.nombre }}</td>
+          <td>{{ producto.precio | number:'1.2-2' }}</td>
+          <td>{{ producto.categoria }}</td>
+          <td>
+            <button class="btn btn-success btn-sm">Comprar</button> <!-- Botón -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,84 @@
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading" class="container my-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-4 text-center">Clientes</h2>
+    <!-- Botón para mostrar formulario de agregar -->
+    <button class="btn btn-success" (click)="nuevoCliente={}; mostrarAgregarCliente=true">
+      Agregar Cliente
+    </button>
+  </div>
+
+  <!-- Tabla de clientes -->
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cliente of clientes">
+          <td>{{ cliente.id }}</td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.email }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm me-2" (click)="editar(cliente)">
+              Actualizar
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarCliente(cliente.id)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Formulario para agregar cliente -->
+  <div *ngIf="mostrarAgregarCliente" class="card p-3 mt-3">
+    <h5>Nuevo Cliente</h5>
+    <div class="mb-3">
+      <label class="form-label">Nombre</label>
+      <input type="text" class="form-control" [(ngModel)]="nuevoCliente.nombre" name="nombre">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" [(ngModel)]="nuevoCliente.email" name="email">
+    </div>
+    <button class="btn btn-success me-2" (click)="agregarCliente(nuevoCliente); mostrarAgregarCliente=false;">
+      Guardar
+    </button>
+    <button class="btn btn-secondary" (click)="mostrarAgregarCliente=false">
+      Cancelar
+    </button>
+  </div>
+
+  <!-- Formulario para editar cliente -->
+  <div *ngIf="mostrarEditarCliente" class="card p-3 mt-3">
+    <h5>Editar Cliente</h5>
+    <div class="mb-3">
+      <label class="form-label">Nombre</label>
+      <input type="text" class="form-control" [(ngModel)]="editarCliente.nombre">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" [(ngModel)]="editarCliente.email">
+    </div>
+    <button class="btn btn-success me-2" (click)="guardarEdicion()">
+      Guardar
+    </button>
+    <button class="btn btn-secondary" (click)="mostrarEditarCliente=false">
+      Cancelar
+    </button>
+  </div>
+
+</div>
