@@ -11,6 +11,7 @@ import { CategoriasService } from '../categorias.service';
 export class ProductosComponent {
   title = 'AngularMVVM';
   productos: any[] = [];
+  categorias: any[] = [];
   loading: boolean = true;
   error: string | null = null;
 
@@ -25,22 +26,23 @@ export class ProductosComponent {
   constructor(private productoService: ProductosService, private categoriasService: CategoriasService) {
     // Formulario para agregar producto
     this.myFormNuevo = new FormGroup({
-      nombre: new FormControl('', Validators.required),
-      precio: new FormControl(0, [Validators.required, Validators.min(0)]),
-      categoriaId: new FormControl(1, Validators.required),
+      nombre: new FormControl(''),
+      precio: new FormControl(''),
+      categoriaId: new FormControl(''),
     });
 
     // Formulario para editar producto
     this.myFormEditar = new FormGroup({
       id: new FormControl(''),
-      nombre: new FormControl('', Validators.required),
-      precio: new FormControl(0, [Validators.required, Validators.min(0)]),
-      categoriaId: new FormControl(1, Validators.required),
+      nombre: new FormControl(''),
+      precio: new FormControl(''),
+      categoriaId: new FormControl(''),
     });
   }
 
   ngOnInit() {
     this.getProductos();
+    //this.getCategorias();
   }
 
   getProductos() {
