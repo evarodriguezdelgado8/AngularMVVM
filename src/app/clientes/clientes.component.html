@@ -9,7 +9,7 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-4 text-center">Clientes</h2>
     <!-- Botón para mostrar formulario de agregar -->
-    <button class="btn btn-success" (click)="nuevoCliente={}; mostrarAgregarCliente=true">
+    <button class="btn btn-success" (click)="myFormNuevo.reset(); mostrarAgregarCliente=true">
       Agregar Cliente
     </button>
   </div>
@@ -46,39 +46,43 @@
   <!-- Formulario para agregar cliente -->
   <div *ngIf="mostrarAgregarCliente" class="card p-3 mt-3">
     <h5>Nuevo Cliente</h5>
-    <div class="mb-3">
-      <label class="form-label">Nombre</label>
-      <input type="text" class="form-control" [(ngModel)]="nuevoCliente.nombre" name="nombre">
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Email</label>
-      <input type="email" class="form-control" [(ngModel)]="nuevoCliente.email" name="email">
-    </div>
-    <button class="btn btn-success me-2" (click)="agregarCliente(nuevoCliente); mostrarAgregarCliente=false;">
-      Guardar
-    </button>
-    <button class="btn btn-secondary" (click)="mostrarAgregarCliente=false">
-      Cancelar
-    </button>
+    <form [formGroup]="myFormNuevo" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" formControlName="nombre">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" formControlName="email">
+      </div>
+      <button type="submit" class="btn btn-success me-2" [disabled]="myFormNuevo.invalid">
+        Guardar
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="mostrarAgregarCliente=false">
+        Cancelar
+      </button>
+    </form>
   </div>
 
   <!-- Formulario para editar cliente -->
   <div *ngIf="mostrarEditarCliente" class="card p-3 mt-3">
     <h5>Editar Cliente</h5>
-    <div class="mb-3">
-      <label class="form-label">Nombre</label>
-      <input type="text" class="form-control" [(ngModel)]="editarCliente.nombre">
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Email</label>
-      <input type="email" class="form-control" [(ngModel)]="editarCliente.email">
-    </div>
-    <button class="btn btn-success me-2" (click)="guardarEdicion()">
-      Guardar
-    </button>
-    <button class="btn btn-secondary" (click)="mostrarEditarCliente=false">
-      Cancelar
-    </button>
+    <form [formGroup]="myFormEditar" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" formControlName="nombre">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" formControlName="email">
+      </div>
+      <button type="submit" class="btn btn-success me-2" [disabled]="myFormEditar.invalid">
+        Guardar
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="mostrarEditarCliente=false">
+        Cancelar
+      </button>
+    </form>
   </div>
 
 </div>

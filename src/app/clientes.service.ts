@@ -6,33 +6,42 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ClientesService {
-  private apiUrl = 'http://localhost:3000/'; // URL base de la API
+  private baseUrl = 'http://localhost:3000/clientes';
 
   constructor(private http: HttpClient) {}
 
-  // Método genérico para obtener datos (GET)
-  getData(action: string): Observable<any> {
-    const url = `http://localhost:3000/clientes`; // URL dinámica basada en la acción
-    return this.http.get<any>(url); // Hacer la solicitud GET
+  // ==========================
+  //   GET - Obtener lista
+  // ==========================
+  getData(): Observable<any> {
+    return this.http.get<any>(this.baseUrl);
   }
 
-  // Método genérico para enviar datos (POST)
-  postData(action: string, data: any): Observable<any> {
-    const url = `${this.apiUrl}${action}`; // -> http://localhost:3000/clientes
-    return this.http.post<any>(url, data);
+  // ==========================
+  //   GET BY ID
+  // ==========================
+  getById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${id}`);
   }
 
-
-  // Método genérico para actualizar datos (PUT)
-  putData(cliente: any): Observable<any> {
-    const url = `${this.apiUrl}clientes/${cliente.id}`; // URL con el ID del cliente
-    return this.http.put<any>(url, cliente); // Hacer la solicitud PUT
+  // ==========================
+  //   POST - Nuevo cliente
+  // ==========================
+  postData(cliente: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl, cliente);
   }
 
-  
-  // Método genérico para eliminar datos (DELETE)
+  // ==========================
+  //   PUT - Editar cliente
+  // ==========================
+  putData(id: number, cliente: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${id}`, cliente);
+  }
+
+  // ==========================
+  //   DELETE - Borrar cliente
+  // ==========================
   deleteData(id: number): Observable<any> {
-    const url = `${this.apiUrl}clientes/${id}`; // URL correcta para DELETE
-    return this.http.delete<any>(url);
+    return this.http.delete<any>(`${this.baseUrl}/${id}`);
   }
 }

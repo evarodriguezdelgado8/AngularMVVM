@@ -1,73 +1,102 @@
 import { Component } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ProductosService } from '../productos.service';
 
 @Component({
   selector: 'app-productos',
   templateUrl: './productos.component.html',
-  styleUrls: ['./productos.component.scss']
+  styleUrls: ['./productos.component.scss'],
 })
 export class ProductosComponent {
-  title = 'AngularMVVM';
-  usuarios: any[] = [];
-  productos: any;
-  error: string | null = null;
-  data: any; // Variable para almacenar los datos
-  loading: boolean = true; // Indicador de carga
+  productos: any[] = [];
+  loading = true;
 
-  constructor(private productoService: ProductosService) {}
+  // Formulario reactivo
+  nuevoProductoForm: FormGroup;
+  editarProductoForm: FormGroup;
 
- ngOnInit() {
-    this.getProductos(); // Cargar los datos cuando el componente se inicializa
+  // Mapa de categorías
+  categorias = [
+    { id: 1, nombre: 'Periféricos' },
+    { id: 2, nombre: 'Hardware' },
+    { id: 3, nombre: 'Software' },
+  ];
+
+  mostrarAgregarProducto = false;
+  mostrarEditarProducto = false;
+
+  constructor(private productoService: ProductosService) {
+    this.nuevoProductoForm = new FormGroup({
+      nombre: new FormControl('', Validators.required),
+      precio: new FormControl('', Validators.required),
+      categoriaId: new FormControl('', Validators.required),
+    });
+
+    this.editarProductoForm = new FormGroup({
+      id: new FormControl(''),
+      nombre: new FormControl('', Validators.required),
+      precio: new FormControl('', Validators.required),
+      categoriaId: new FormControl('', Validators.required),
+    });
   }
 
-  getProductos(): void {
-    this.productoService.getData('usuarios').subscribe({
+  ngOnInit() {
+    this.getProductos();
+  }
+
+  getProductos() {
+    this.productoService.getData().subscribe({
       next: (data) => {
-        this.usuarios = data; // Asignar los datos de productos
-        this.productos = data; // Asignar la respuesta a la variable 'data'
-        this.loading = false; // Detener el indicador de carga
+        this.productos = data;
+        this.loading = false;
       },
-      error: (err) => {
-        this.error = 'Error al cargar productos'; // Manejar errores
-        console.error(err);
-      },
-    });
-  }
-   agregarProducto(nuevoProducto: any) {
-    this.productoService.postData('productos', nuevoProducto).subscribe({
-      next: (res) => {
-        console.log('Producto agregado:', res);
-        this.getProductos(); // Recargar productos después de agregar
-      },
-      error: (err) => {
-        console.error('Error al agregar producto', err);
-      }
+      error: (err) => console.error(err),
     });
   }
 
-  // Ejemplo de cómo usar putData
-  actualizarProducto(producto: any) {
-    this.productoService.putData('productos', producto).subscribe({
-      next: (res) => {
-        console.log('Producto actualizado:', res);
+  getNombreCategoria(id: number): string {
+    const cat = this.categorias.find(c => c.id === id);
+    return cat ? cat.nombre : 'Sin categoría';
+  }
+
+  agregarProducto() {
+    if (this.nuevoProductoForm.valid) {
+      this.productoService.postData(this.nuevoProductoForm.value).subscribe({
+        next: () => {
+          this.getProductos();
+          this.nuevoProductoForm.reset();
+          this.mostrarAgregarProducto = false;
+        },
+        error: (err) => console.error(err),
+      });
+    }
+  }
+
+  editarProducto(producto: any) {
+    this.editarProductoForm.setValue({
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      categoriaId: producto.categoriaId,
+    });
+    this.mostrarEditarProducto = true;
+  }
+
+  guardarEdicion() {
+    const prod = this.editarProductoForm.value;
+    this.productoService.putData(prod.id, prod).subscribe({
+      next: () => {
         this.getProductos();
+        this.mostrarEditarProducto = false;
       },
-      error: (err) => {
-        console.error('Error al actualizar producto', err);
-      }
+      error: (err) => console.error(err),
     });
   }
 
-  // Ejemplo de cómo usar deleteData
   eliminarProducto(id: number) {
-    this.productoService.deleteData('productos', id).subscribe({
-      next: (res) => {
-        console.log('Producto eliminado:', res);
-        this.getProductos();
-      },
-      error: (err) => {
-        console.error('Error al eliminar producto', err);
-      }
+    this.productoService.deleteData(id).subscribe({
+      next: () => this.getProductos(),
+      error: (err) => console.error(err),
     });
   }
 }

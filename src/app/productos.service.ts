@@ -3,37 +3,45 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductosService {
+  private baseUrl = 'http://localhost:3000/productos';
 
-  private apiUrl = 'http://localhost:3000/';  // URL base de la API
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
-
-  // Método genérico para obtener datos (GET)
-  getData(action: string): Observable<any> {
-    const url = `http://localhost:3000/productos/`;  // URL dinámica basada en la acción
-    return this.http.get<any>(url);  // Hacer la solicitud GET
-  }
-  
-
-  // Método genérico para enviar datos (POST)
-  postData(action: string, data: any): Observable<any> {
-    const url = `${this.apiUrl}?action=${action}`;  // URL dinámica basada en la acción
-    return this.http.post<any>(url, data);  // Hacer la solicitud POST
+  // ==========================
+  //   GET - Obtener lista
+  // ==========================
+  getData(): Observable<any> {
+    return this.http.get<any>(this.baseUrl);
   }
 
-  // Método genérico para actualizar datos (PUT)
-  putData(action: string, data: any): Observable<any> {
-    const url = `${this.apiUrl}?action=${action}`;  // URL dinámica basada en la acción
-    return this.http.put<any>(url, data);  // Hacer la solicitud PUT
+  // ==========================
+  //   GET BY ID
+  // ==========================
+  getById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${id}`);
   }
 
-  // Método genérico para eliminar datos (DELETE)
-  deleteData(action: string, id: number): Observable<any> {
-    const url = `${this.apiUrl}?action=${action}&id=${id}`;  // URL dinámica con el id
-    return this.http.delete<any>(url);  // Hacer la solicitud DELETE
+  // ==========================
+  //   POST - Nuevo cliente
+  // ==========================
+  postData(cliente: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl, cliente);
   }
 
+  // ==========================
+  //   PUT - Editar cliente
+  // ==========================
+  putData(id: number, cliente: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${id}`, cliente);
+  }
+
+  // ==========================
+  //   DELETE - Borrar cliente
+  // ==========================
+  deleteData(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/${id}`);
+  }
 }

@@ -1,19 +1,23 @@
 import { Component } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
 import { ClientesService } from '../clientes.service';
 
 @Component({
   selector: 'app-clientes',
   templateUrl: './clientes.component.html',
-  styleUrls: ['./clientes.component.scss']
+  styleUrls: ['./clientes.component.scss'],
 })
 export class ClientesComponent {
-
   title = 'AngularMVVM';
   usuarios: any[] = [];
   clientes: any;
   error: string | null = null;
-  data: any; // Variable para almacenar los datos
-  loading: boolean = true; // Indicador de carga
+  data: any;
+  loading: boolean = true;
+
+  myFormNuevo: FormGroup;
+  myFormEditar: FormGroup;
+
   // Variables para el formulario de nuevo cliente
   nuevoCliente: any = {};
   mostrarAgregarCliente: boolean = false;
@@ -22,75 +26,80 @@ export class ClientesComponent {
   editarCliente: any = null;
   mostrarEditarCliente: boolean = false;
 
-  constructor(private clienteService: ClientesService) {}
+  constructor(private clienteService: ClientesService) {
+    this.myFormNuevo = new FormGroup({
+      nombre: new FormControl('Eva'),
+      email: new FormControl(''),
+    });
 
-  ngOnInit() {   
+    this.myFormEditar = new FormGroup({
+      id: new FormControl(''),
+      nombre: new FormControl(''),
+      email: new FormControl(''),
+    });
+  }
+
+  ngOnInit() {
     this.getClientes();
-  }   
+  }
 
-   getClientes(): void {
-    this.clienteService.getData('clientes').subscribe({
+  // Función para enviar formulario
+  onSubmit() {
+    if (this.mostrarAgregarCliente) {
+      this.clienteService.postData(this.myFormNuevo.value).subscribe({
+        next: (res) => {
+          console.log('Cliente agregado:', res);
+          this.getClientes();
+          this.myFormNuevo.reset();
+          this.mostrarAgregarCliente = false;
+        },
+        error: (err) => console.error('Error al agregar cliente', err),
+      });
+    }
+
+    if (this.mostrarEditarCliente) {
+      const cliente = this.myFormEditar.value;
+      this.clienteService.putData(cliente.id, cliente).subscribe({
+        next: (res) => {
+          console.log('Cliente actualizado:', res);
+          this.getClientes();
+          this.myFormEditar.reset();
+          this.mostrarEditarCliente = false;
+        },
+        error: (err) => console.error('Error al actualizar cliente', err),
+      });
+    }
+  }
+
+  getClientes(): void {
+    this.clienteService.getData().subscribe({
       next: (data) => {
-        this.usuarios = data; // Asignar los datos de productos
-        this.clientes = data; // Asignar la respuesta a la variable 'data'
-        this.loading = false; // Detener el indicador de carga
+        this.usuarios = data;
+        this.clientes = data;
+        this.loading = false;
       },
       error: (err) => {
-        this.error = 'Error al cargar clientes'; // Manejar errores
+        this.error = 'Error al cargar clientes';
         console.error(err);
       },
     });
   }
 
-  // Agregar un nuevo cliente
-  agregarCliente(nuevoCliente: any) {
-    this.clienteService.postData('clientes', nuevoCliente).subscribe({
-      next: (res) => {
-        console.log('Cliente agregado:', res);
-        this.getClientes(); 
-      },
-      error: (err) => console.error('Error al agregar cliente', err)
-    });
-  }
-
   // Abrir formulario de edición
   editar(cliente: any) {
-    this.editarCliente = { ...cliente }; // Hacer copia
+    this.editarCliente = { ...cliente };
+    this.myFormEditar.patchValue(cliente);
     this.mostrarEditarCliente = true;
   }
 
-  // Guardar cambios de edición
-  guardarEdicion() {
-    this.actualizarCliente(this.editarCliente); // Llama a tu método existente
-    this.editarCliente = null;
-    this.mostrarEditarCliente = false;
-  }
-
-  // Actualizar un cliente existente
-  actualizarCliente(cliente: any) {
-  this.clienteService.putData(cliente).subscribe({
-    next: (res) => {
-      console.log('Cliente actualizado:', res);
-      this.getClientes(); // Recargar lista
-    },
-    error: (err) => {
-      console.error('Error al actualizar cliente', err);
-    }
-  });
-}
-
-
   // Eliminar un cliente
   eliminarCliente(id: number) {
-  this.clienteService.deleteData(id).subscribe({
-    next: (res) => {
-      console.log('Cliente eliminado:', res);
-      this.getClientes(); // Recargar lista
-    },
-    error: (err) => {
-      console.error('Error al eliminar cliente', err);
-    }
-  });
-}
-
+    this.clienteService.deleteData(id).subscribe({
+      next: () => {
+        console.log('Cliente eliminado');
+        this.getClientes();
+      },
+      error: (err) => console.error('Error al eliminar cliente', err),
+    });
+  }
 }

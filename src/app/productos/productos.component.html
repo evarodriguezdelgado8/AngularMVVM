@@ -5,30 +5,79 @@
 </div>
 
 <div *ngIf="!loading" class="container my-4">
-  <h2 class="mb-4 text-center">Productos Disponibles</h2>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-4 text-center">Productos</h2>
+    <button class="btn btn-success" (click)="mostrarAgregarProducto=true">Agregar Producto</button>
+  </div>
 
-  <div class="table-responsive">
-    <table class="table table-striped table-hover table-bordered align-middle">
-      <thead class="table-dark">
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Precio ($)</th>
-          <th>Categoría</th>
-          <th>Comprar</th> 
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let producto of productos">
-          <td>{{ producto.id }}</td>
-          <td>{{ producto.nombre }}</td>
-          <td>{{ producto.precio | number:'1.2-2' }}</td>
-          <td>{{ producto.categoria }}</td>
-          <td>
-            <button class="btn btn-success btn-sm">Comprar</button> <!-- Botón -->
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Tabla de productos -->
+  <table class="table table-striped table-hover table-bordered align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Categoría</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let producto of productos">
+        <td>{{ producto.id }}</td>
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.precio | number:'1.2-2' }}</td>
+        <td>{{ getNombreCategoria(producto.categoriaId) }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-2" (click)="editarProducto(producto)">Editar</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminarProducto(producto.id)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Formulario agregar producto -->
+  <div *ngIf="mostrarAgregarProducto" class="card p-3 mt-3">
+    <h5>Nuevo Producto</h5>
+    <form [formGroup]="nuevoProductoForm" (ngSubmit)="agregarProducto()">
+      <div class="mb-3">
+        <label>Nombre</label>
+        <input class="form-control" formControlName="nombre">
+      </div>
+      <div class="mb-3">
+        <label>Precio</label>
+        <input class="form-control" type="number" formControlName="precio">
+      </div>
+      <div class="mb-3">
+        <label>Categoría</label>
+        <select class="form-select" formControlName="categoriaId">
+          <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+        </select>
+      </div>
+      <button class="btn btn-success" type="submit">Guardar</button>
+      <button class="btn btn-secondary" type="button" (click)="mostrarAgregarProducto=false">Cancelar</button>
+    </form>
+  </div>
+
+  <!-- Formulario editar producto -->
+  <div *ngIf="mostrarEditarProducto" class="card p-3 mt-3">
+    <h5>Editar Producto</h5>
+    <form [formGroup]="editarProductoForm" (ngSubmit)="guardarEdicion()">
+      <div class="mb-3">
+        <label>Nombre</label>
+        <input class="form-control" formControlName="nombre">
+      </div>
+      <div class="mb-3">
+        <label>Precio</label>
+        <input class="form-control" type="number" formControlName="precio">
+      </div>
+      <div class="mb-3">
+        <label>Categoría</label>
+        <select class="form-select" formControlName="categoriaId">
+          <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+        </select>
+      </div>
+      <button class="btn btn-success" type="submit">Guardar</button>
+      <button class="btn btn-secondary" type="button" (click)="mostrarEditarProducto=false">Cancelar</button>
+    </form>
   </div>
 </div>
