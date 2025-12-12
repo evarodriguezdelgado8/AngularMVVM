@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ProductosService } from '../productos.service';
+import { CategoriasService } from '../categorias.service';
 
 @Component({
   selector: 'app-productos',
@@ -8,35 +9,33 @@ import { ProductosService } from '../productos.service';
   styleUrls: ['./productos.component.scss'],
 })
 export class ProductosComponent {
+  title = 'AngularMVVM';
   productos: any[] = [];
-  loading = true;
+  loading: boolean = true;
+  error: string | null = null;
 
-  // Formulario reactivo
-  nuevoProductoForm: FormGroup;
-  editarProductoForm: FormGroup;
+  // Formularios reactivos
+  myFormNuevo: FormGroup;
+  myFormEditar: FormGroup;
 
-  // Mapa de categorías
-  categorias = [
-    { id: 1, nombre: 'Periféricos' },
-    { id: 2, nombre: 'Hardware' },
-    { id: 3, nombre: 'Software' },
-  ];
+  // Variables para edición
+  mostrarAgregarProducto: boolean = false;
+  mostrarEditarProducto: boolean = false;
 
-  mostrarAgregarProducto = false;
-  mostrarEditarProducto = false;
-
-  constructor(private productoService: ProductosService) {
-    this.nuevoProductoForm = new FormGroup({
+  constructor(private productoService: ProductosService, private categoriasService: CategoriasService) {
+    // Formulario para agregar producto
+    this.myFormNuevo = new FormGroup({
       nombre: new FormControl('', Validators.required),
-      precio: new FormControl('', Validators.required),
-      categoriaId: new FormControl('', Validators.required),
+      precio: new FormControl(0, [Validators.required, Validators.min(0)]),
+      categoriaId: new FormControl(1, Validators.required),
     });
 
-    this.editarProductoForm = new FormGroup({
+    // Formulario para editar producto
+    this.myFormEditar = new FormGroup({
       id: new FormControl(''),
       nombre: new FormControl('', Validators.required),
-      precio: new FormControl('', Validators.required),
-      categoriaId: new FormControl('', Validators.required),
+      precio: new FormControl(0, [Validators.required, Validators.min(0)]),
+      categoriaId: new FormControl(1, Validators.required),
     });
   }
 
@@ -50,30 +49,35 @@ export class ProductosComponent {
         this.productos = data;
         this.loading = false;
       },
-      error: (err) => console.error(err),
+      error: (err) => {
+        this.error = 'Error al cargar productos';
+        console.error(err);
+      },
     });
   }
 
-  getNombreCategoria(id: number): string {
-    const cat = this.categorias.find(c => c.id === id);
-    return cat ? cat.nombre : 'Sin categoría';
+  // ========================
+  // Agregar Producto
+  // ========================
+  onSubmitNuevo() {
+    if (this.myFormNuevo.invalid) return;
+
+    this.productoService.postData(this.myFormNuevo.value).subscribe({
+      next: (res) => {
+        console.log('Producto agregado:', res);
+        this.getProductos();
+        this.myFormNuevo.reset({ nombre: '', precio: 0, categoriaId: 1 });
+        this.mostrarAgregarProducto = false;
+      },
+      error: (err) => console.error('Error al agregar producto', err),
+    });
   }
 
-  agregarProducto() {
-    if (this.nuevoProductoForm.valid) {
-      this.productoService.postData(this.nuevoProductoForm.value).subscribe({
-        next: () => {
-          this.getProductos();
-          this.nuevoProductoForm.reset();
-          this.mostrarAgregarProducto = false;
-        },
-        error: (err) => console.error(err),
-      });
-    }
-  }
-
+  // ========================
+  // Editar Producto
+  // ========================
   editarProducto(producto: any) {
-    this.editarProductoForm.setValue({
+    this.myFormEditar.setValue({
       id: producto.id,
       nombre: producto.nombre,
       precio: producto.precio,
@@ -82,21 +86,30 @@ export class ProductosComponent {
     this.mostrarEditarProducto = true;
   }
 
-  guardarEdicion() {
-    const prod = this.editarProductoForm.value;
-    this.productoService.putData(prod.id, prod).subscribe({
-      next: () => {
+  onSubmitEditar() {
+    if (this.myFormEditar.invalid) return;
+
+    const productoEditado = this.myFormEditar.value;
+    this.productoService.putData(productoEditado.id, productoEditado).subscribe({
+      next: (res) => {
+        console.log('Producto actualizado:', res);
         this.getProductos();
         this.mostrarEditarProducto = false;
       },
-      error: (err) => console.error(err),
+      error: (err) => console.error('Error al actualizar producto', err),
     });
   }
 
+  // ========================
+  // Eliminar Producto
+  // ========================
   eliminarProducto(id: number) {
     this.productoService.deleteData(id).subscribe({
-      next: () => this.getProductos(),
-      error: (err) => console.error(err),
+      next: (res) => {
+        console.log('Producto eliminado:', res);
+        this.getProductos();
+      },
+      error: (err) => console.error('Error al eliminar producto', err),
     });
   }
 }

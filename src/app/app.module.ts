@@ -10,6 +10,7 @@ import { FooterComponent } from './footer/footer.component';
 import { ClientesComponent } from './clientes/clientes.component';
 import { ProductosComponent } from './productos/productos.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { CategoriasService } from './categorias.service';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     HttpClientModule,
     ReactiveFormsModule,
   ],
-  providers: [ProductosService, ClientesService],
+  providers: [ProductosService, ClientesService, CategoriasService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

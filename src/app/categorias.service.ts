@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class ProductosService {
-  private baseUrl = 'http://localhost:3000/productos';
+export class CategoriasService {
+  private baseUrl = 'http://localhost:3000/categorias';
 
   constructor(private http: HttpClient) {}
 
@@ -25,21 +25,21 @@ export class ProductosService {
   }
 
   // ==========================
-  //   POST - Nuevo producto
+  //   POST - Nuevo categoria
   // ==========================
-  postData(producto: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl, producto);
+  postData(categoria: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl, categoria);
   }
 
   // ==========================
-  //   PUT - Editar producto
+  //   PUT - Editar categoria
   // ==========================
-  putData(id: number, producto: any): Observable<any> {
-    return this.http.put<any>(`${this.baseUrl}/${id}`, producto);
+  putData(id: number, categoria: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${id}`, categoria);
   }
 
   // ==========================
-  //   DELETE - Borrar producto
+  //   DELETE - Borrar categoria
   // ==========================
   deleteData(id: number): Observable<any> {
     return this.http.delete<any>(`${this.baseUrl}/${id}`);
