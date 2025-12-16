@@ -42,7 +42,7 @@ export class ProductosComponent {
 
   ngOnInit() {
     this.getProductos();
-    //this.getCategorias();
+    //cdthis.getCategorias();
   }
 
   getProductos() {

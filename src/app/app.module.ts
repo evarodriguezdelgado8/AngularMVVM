@@ -11,6 +11,7 @@ import { ClientesComponent } from './clientes/clientes.component';
 import { ProductosComponent } from './productos/productos.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CategoriasService } from './categorias.service';
+import { UsuariosComponent } from './usuarios/usuarios.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { CategoriasService } from './categorias.service';
     FooterComponent,
     ProductosComponent,
     ClientesComponent,
+    UsuariosComponent,
     
   ],
   imports: [

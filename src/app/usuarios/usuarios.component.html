@@ -1,0 +1,84 @@
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border text-primary"></div>
+</div>
+
+<div *ngIf="!loading" class="container my-4">
+
+  <div class="d-flex justify-content-between mb-3">
+    <h2>Usuarios</h2>
+    <button class="btn btn-success" (click)="mostrarAgregar = true">
+      Nuevo Usuario
+    </button>
+  </div>
+
+  <!-- TABLA -->
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of usuarios">
+        <td>{{ u.id }}</td>
+        <td>{{ u.nombre }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.rol }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-2" (click)="editarUsuario(u)">
+            Editar
+          </button>
+          <button class="btn btn-danger btn-sm" (click)="eliminarUsuario(u.id)">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- NUEVO -->
+  <div *ngIf="mostrarAgregar" class="card p-3 mt-3">
+    <h5>Nuevo Usuario</h5>
+    <form [formGroup]="myFormNuevo" (ngSubmit)="onSubmitNuevo()">
+
+      <input class="form-control mb-2" placeholder="Nombre" formControlName="nombre">
+      <input class="form-control mb-2" placeholder="Email" formControlName="email">
+
+      <select class="form-control mb-3" formControlName="rol">
+        <option value="">Selecciona rol</option>
+        <option value="admin">Admin</option>
+        <option value="cliente">Cliente</option>
+      </select>
+
+      <button class="btn btn-success me-2">Guardar</button>
+      <button type="button" class="btn btn-secondary" (click)="mostrarAgregar=false">
+        Cancelar
+      </button>
+    </form>
+  </div>
+
+  <!-- EDITAR -->
+  <div *ngIf="mostrarEditar" class="card p-3 mt-3">
+    <h5>Editar Usuario</h5>
+    <form [formGroup]="myFormEditar" (ngSubmit)="onSubmitEditar()">
+
+      <input class="form-control mb-2" formControlName="nombre">
+      <input class="form-control mb-2" formControlName="email">
+
+      <select class="form-control mb-3" formControlName="rol">
+        <option value="admin">Admin</option>
+        <option value="cliente">Cliente</option>
+      </select>
+
+      <button class="btn btn-success me-2">Guardar</button>
+      <button type="button" class="btn btn-secondary" (click)="mostrarEditar=false">
+        Cancelar
+      </button>
+    </form>
+  </div>
+
+</div>
